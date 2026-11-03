@@ -1,0 +1,113 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #111827 50%, #1e1b4b 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    overflow: hidden;
+}
+
+.container {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.cyber-box {
+    background: rgba(17, 24, 39, 0.8);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.1), inset 0 0 20px rgba(0, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+/* تأثير الخطوط السيبرانية في الخلفية */
+.cyber-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 255, 0.03) 2px,
+        rgba(0, 255, 255, 0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+.shield-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px #00ffff);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #00ffff;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #9ca3af;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.cyber-btn {
+    background: transparent;
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    padding: 15px 40px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), inset 0 0 15px rgba(0, 255, 255, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.cyber-btn:hover, .cyber-btn:active {
+    background: #00ffff;
+    color: #000;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+}
+
+.status-text {
+    margin-top: 25px;
+    font-size: 14px;
+    color: #a78bfa;
+    font-family: monospace;
+}

